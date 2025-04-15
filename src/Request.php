@@ -6,9 +6,6 @@ class Request extends Start {
     public $ntpID;
     public $jsonRequest;
 
-    function __construct(){
-        parent::__construct();
-    }
 
     public function setConfig($configData) {
         $config = array(

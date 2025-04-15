@@ -54,9 +54,6 @@ class IPN extends Request{
     const STATUS_TRIAL									= 22;	//0x16;         // specific to Model_Purchase_Sms_Online; trial period has started
     const STATUS_EXPIRED								= 23;	//0x17;         // cancel a not payed purchase 
 
-    public function __construct(){
-        parent::__construct();
-    }
 
     /**
      * to Verify IPN
@@ -104,14 +101,12 @@ class IPN extends Request{
         $tks = \explode('.', $verificationToken);
         if (\count($tks) != 3) {
             throw new \Exception('Wrong_Verification_Token');
-            exit;
         }
         list($headb64, $bodyb64, $cryptob64) = $tks;
         $jwtHeader = json_decode(base64_decode(\strtr($headb64, '-_', '+/')));
         
         if($jwtHeader->typ !== 'JWT') {
-            throw new \Exception('Wrong_Token_Type');
-            exit; 
+            throw new \Exception('Wrong_Token_Type'); 
         }
 
         /**
@@ -141,7 +136,6 @@ class IPN extends Request{
         */
         if(!isset($this->alg) || $this->alg==null){
             throw new \Exception('IDS_Service_IpnController__INVALID_JWT_ALG');
-            exit;
         }
         $jwtAlgorithm = !is_null($jwtHeader->alg) ? $jwtHeader->alg : $this->alg ;
 
@@ -157,7 +151,6 @@ class IPN extends Request{
             if(strcmp($objJwt->iss, 'NETOPIA Payments') != 0)
                 {
                 throw new \Exception('IDS_Service_IpnController__E_VERIFICATION_FAILED_GENERAL');
-                exit;
                 }
             
             /**
@@ -166,7 +159,6 @@ class IPN extends Request{
              */
             if(empty($objJwt->aud)){
                 throw new \Exception('IDS_Service_IpnController__JWT AUD is Empty');
-                exit;
             }
 
             /**
@@ -183,23 +175,19 @@ class IPN extends Request{
                     break;
                 default:
                     throw new \Exception('IDS_Service_IpnController__JWT AUD Type is unknown');
-                    exit;
                     break;
             }
 
             if( $actualJwtAud != $this->activeKey){
                 throw new \Exception('IDS_Service_IpnController__INVALID_SIGNATURE'.print_r($objJwt->aud, true).'__'.$this->activeKey);
-                exit;
             }
         
             if(!in_array($actualJwtAud, $this->posSignatureSet,true)) {
                 throw new \Exception('IDS_Service_IpnController__INVALID_SIGNATURE_SET');
-                exit;
             }
             
             if(!isset($this->hashMethod) || $this->hashMethod==null){
                 throw new \Exception('IDS_Service_IpnController__INVALID_HASH_METHOD');
-                exit;
             }
             
             /**
@@ -219,7 +207,6 @@ class IPN extends Request{
             if(strcmp($payloadHash, $objJwt->sub) != 0)
                 {
                 throw new \Exception('IDS_Service_IpnController__E_VERIFICATION_FAILED_TAINTED_PAYLOAD');
-                exit;
                 }
         
             try
