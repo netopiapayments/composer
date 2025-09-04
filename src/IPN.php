@@ -305,7 +305,11 @@ class IPN extends Request{
     */
     public function getApacheHeader() {
         $aHeaders = apache_request_headers();
-        return $aHeaders;
+        if(!is_array($aHeaders)) {
+            return [];
+        }
+
+        return array_change_key_case($aHeaders, CASE_LOWER);
     }
 
     /**
@@ -317,7 +321,7 @@ class IPN extends Request{
         if(!is_array($httpHeader)){
             return false;
         } else {
-            if(!array_key_exists('Verification-token', $httpHeader)){
+            if(!array_key_exists('verification-token', $httpHeader)){
                 return false;
             }
         }
@@ -330,7 +334,7 @@ class IPN extends Request{
     public function getVerificationToken($httpHeader) {
         foreach($httpHeader as $headerName=>$headerValue)
             {
-                if(strcasecmp('Verification-token', $headerName) == 0)
+                if(strcasecmp('verification-token', $headerName) == 0)
                 {
                     $verificationToken = $headerValue;
                     return $verificationToken;
