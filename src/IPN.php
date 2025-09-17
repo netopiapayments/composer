@@ -71,24 +71,8 @@ class IPN extends Request{
             'errorMessage'	=> ''
         );
 
-        /**
-        *  Fetch all HTTP request headers
-        */
-        $aHeaders = $this->getApacheHeader();
-        if(!$this->validHeader($aHeaders)) {
-            echo 'IPN__header is not an valid HTTP HEADER' . PHP_EOL;
-            exit;
-        }
-
-        /**
-        *  fetch Verification-token from HTTP header 
-        */
-        $verificationToken = $this->getVerificationToken($aHeaders);
-        if($verificationToken === null)
-            {
-            echo 'IPN__Verification-token is missing in HTTP HEADER' . PHP_EOL;
-            exit;
-            }
+        // fetch Verification-token from HTTP header.
+        $verificationToken = $this->getSpecificHeader('Verification-Token');
 
         /**
         * Analising the verification token
@@ -301,41 +285,29 @@ class IPN extends Request{
     }
 
     /**
-    *  Fetch all HTTP request headers
+    *  get HTTP headers
     */
-    public function getApacheHeader() {
-        $aHeaders = apache_request_headers();
-        return $aHeaders;
-    }
-
-    /**
-    * If header exist in HTTP request
-    * and is a valid header
-    * @return bool 
-    */
-    public function validHeader($httpHeader) {
-        if(!is_array($httpHeader)){
-            return false;
-        } else {
-            if(!array_key_exists('Verification-token', $httpHeader)){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-    *  fetch Verification-token from HTTP header 
-    */
-    public function getVerificationToken($httpHeader) {
-        foreach($httpHeader as $headerName=>$headerValue)
-            {
-                if(strcasecmp('Verification-token', $headerName) == 0)
-                {
-                    $verificationToken = $headerValue;
-                    return $verificationToken;
+    private function getSpecificHeader(string $headerName): ?string {
+        // Attempt 1: Use getallheaders() if available.
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            foreach ($headers as $name => $value) {
+                if (strcasecmp($name, $headerName) === 0) {
+                    return $value;
                 }
             }
+        }
+
+        // Attempt 2: to get value from http header.
+        $serverKey = 'HTTP_' . str_replace('-', '_', strtoupper($headerName));
+        if (isset($_SERVER[$serverKey])) {
+            return $_SERVER[$serverKey];
+        }
+        
         return null;
     }
+
+    
+
+    
 }

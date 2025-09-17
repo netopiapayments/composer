@@ -333,5 +333,14 @@ Use this endpoint to start a payment. Based on the response to this call the pro
         OS name, OS version, IP, ...
         
     
-##### Resources
-###### ( <a href="https://github.com/mobilpay" target="_blank">GitHub repository</a> )
+## Resources
+#### ( <a href="https://github.com/netopiapayments" target="_blank">GitHub repository</a> )
+
+## Changelog
+
+#### v1.0.5 - 2025-09-17
+* Change method of get token on IPN
+
+## License
+
+This plugin is licensed under the [MIT License](LICENSE).
