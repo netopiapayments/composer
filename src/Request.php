@@ -1,49 +1,53 @@
 <?php 
 namespace Netopia\Payment2;
 
-class Request extends Start {
+class Request extends Start
+{
     public $authenticationToken;
     public $ntpID;
     public $jsonRequest;
 
 
-    public function setConfig($configData) {
-        $config = array(
+    public function setConfig(array $configData): array
+    {
+        return array(
             'emailTemplate' => (string) isset($configData['emailTemplate']) ? $configData['emailTemplate'] : 'confirm',
             'notifyUrl'     => (string) $configData['notifyUrl'],
             'redirectUrl'   => (string) $configData['redirectUrl'],
             'language'      => (string) isset($configData['language']) ? $configData['language'] : 'RO'
         );
-        return $config;
     }
 
-    public function setPayment($cardData, $threeDSecusreData) {
-        $threeDSecusreData = json_decode($threeDSecusreData);
-        $threeDSecusreData->IP_ADDRESS = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "127.0.0.1";
-        
-        $payment = array(
+    public function setPayment(array $cardData, string|null $threeDSecusreData): array
+    {
+        if (!empty($threeDSecusreData)) {
+            $threeDSecusreData = json_decode($threeDSecusreData);
+            $threeDSecusreData->IP_ADDRESS = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "127.0.0.1";
+        }
+
+        return array(
             'options' => [
                 'installments' => (int) 1,
                 'bonus'        => (int) 0
             ],
             'instrument' => [
-                'type'          => (string) "card",
-                'account'       => (string) $cardData['account'],
-                'expMonth'      => (int) $cardData['expMonth'],
-                'expYear'       => (int) $cardData['expYear'],
-                'secretCode'    => (string) $cardData['secretCode'],
-                'token'         => null
+                'type'          => 'card',
+                'account'       => isset($cardData['account']) ? (string) $cardData['account'] : '',
+                'expMonth'      => isset($cardData['expMonth']) ? (int) $cardData['expMonth'] : 0,
+                'expYear'       => isset($cardData['expYear']) ? (int) $cardData['expYear'] : 0,
+                'secretCode'    => isset($cardData['secretCode']) ? (string) $cardData['secretCode'] : '',
+                'token'         => isset($cardData['token']) ? (string) $cardData['token'] : null,
             ],
             'data' =>  $threeDSecusreData
         );
-        return $payment;
     }
 
     /**
      * Set the order
      */
-    public function setOrder($orderData) {
-        $order = array(
+    public function setOrder(\stdClass $orderData): array
+    {
+        return array(
             'ntpID'         => (string) null, 
             'posSignature'  => (string) $this->posSignature,
             'dateTime'      => (string) date("c", strtotime(date("Y-m-d H:i:s"))),
@@ -74,13 +78,12 @@ class Request extends Start {
                 'details'       => (string) $orderData->shipping->details
             ],
             'products' => $orderData->products,
-            'installments'  => array(
-                                    'selected'  => (int) 1,
-                                    'available' => [(int) 0]
-                            ),
-            'data'       => null
+            'installments' => array(
+                'selected' => (int)1,
+                'available' => [(int)0]
+            ),
+            'data' => null
         );
-        return $order;
     }
 
 
@@ -88,7 +91,12 @@ class Request extends Start {
      * Set the request to payment
      * @output json
      */
-    public function setRequest($configData, $cardData, $orderData, $threeDSecusreData = null) {
+    public function setRequest(
+        array $configData,
+        array $cardData,
+        \stdClass $orderData,
+        string|null $threeDSecusreData = null
+    ): void {
         $startArr = array(
           'config'  => $this->setConfig($configData),
           'payment' => $this->setPayment($cardData, $threeDSecusreData),
@@ -96,11 +104,11 @@ class Request extends Start {
       );
       
       // make json Data 
-      return json_encode($startArr);
+      $this->jsonRequest = json_encode($startArr);
     }
 
-    public function startPayment(){
-      $result = $this->sendRequest($this->jsonRequest);
-      return($result);
+    public function startPayment(): string
+    {
+      return $this->sendRequest($this->jsonRequest);
     }    
 }
