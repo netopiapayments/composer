@@ -82,7 +82,7 @@ class Request extends Start
                 'selected' => (int)1,
                 'available' => [(int)0]
             ),
-            'data' => isset($orderData->customData) ? (string) $orderData->customData : null,
+            'data' => isset($orderData->customData) ? (array) $orderData->customData : null,
             'scaExemptionInd' => isset($orderData->scaExemptionInd) ? (string) $orderData->scaExemptionInd : null,
         );
     }
