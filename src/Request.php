@@ -55,7 +55,7 @@ class Request extends Start
             'orderID'       => (string) $orderData->orderID,
             'amount'        => (float)  $orderData->amount,
             'currency'      => (string) $orderData->currency,
-            'clientID'      => (string) $orderData->billing->clientID,
+            'clientID'      => (string) $orderData->clientID,
             'billing'       => [
                 'email'         => (string) $orderData->billing->email,
                 'phone'         => (string) $orderData->billing->phone,
