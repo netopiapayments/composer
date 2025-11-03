@@ -2,6 +2,7 @@
 namespace Netopia\Payment2;
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
@@ -128,9 +129,9 @@ class IPN extends Request{
             JWT::$timestamp = time() * 1000; 
         
            /**
-            * Decode from JWT
+            * Decode from JWT v6 API
             */
-            $objJwt = JWT::decode($verificationToken, $publicKey, array($jwtAlgorithm));
+            $objJwt = JWT::decode($verificationToken, new Key($publicKey, $jwtAlgorithm));
         
             if(strcmp($objJwt->iss, 'NETOPIA Payments') != 0)
                 {

@@ -340,6 +340,9 @@ Use this endpoint to start a payment. Based on the response to this call the pro
 
 #### v1.0.5 - 2025-09-17
 * Change method of get token on IPN
+#### v1.0.6 - 2025-11-03
+* Upgrade JWT to ver ^6.0
+* Update IPN to be compatibil with JWT ver ^6.0
 
 ## License
 
