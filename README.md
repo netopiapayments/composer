@@ -3,7 +3,7 @@ The NETOPIA Payment PHP library provides easy access to the NETOPIA Payments API
 applications written in the PHP language.
 
 ## Compatible
-PHP 5.7.x - 8.1.x
+PHP 7.4.x - 8.1.x
 
 ## API Documention
 * https://netopia-system.stoplight.io/docs/payments-api/6530c434c2f93-netopia-payments-merchant-api
